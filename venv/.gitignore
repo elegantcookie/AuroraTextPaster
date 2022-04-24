@@ -1,0 +1,7 @@
+# created by virtualenv automatically
+test.py
+main1.py
+venv/
+dist/
+build/
+*.spec
