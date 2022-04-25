@@ -15,4 +15,3 @@ class Worker(QObject):
         self.paster.start()
         self.finished.emit()
 
-
