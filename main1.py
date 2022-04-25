@@ -1,10 +1,8 @@
 import time
 from pynput.keyboard import Key, Controller
 
-
-
 keyboard = Controller()
-delay_time = 3  #s
+delay_time = 3  # s
 
 print(f'Программа вставляет код КУДА УГОДНО, поэтому у вас есть {delay_time} секунды, чтобы переключиться на нужное '
       f'поле ввода')
@@ -37,5 +35,3 @@ for i in range(len(contents)):
             time.sleep(0.095)
     keyboard.press(Key.enter)
     keyboard.release(Key.enter)
-
-
