@@ -1,27 +1,24 @@
 import PyQt5.QtWidgets as qtw
 import PyQt5.QtGui as qtg
-from PyQt5.QtCore import QThread
-from Worker import Worker
+from events import SimpleEvents
 
 
 class MainWindow(qtw.QWidget):
     def __init__(self):
         super().__init__()
+        self.paste_connector = None
+        self.setup_ui()
 
+    def setup_ui(self):
         self.setWindowTitle("AuroraTextPaster")
 
-        # Set Vertical layout
-        self.setLayout(qtw.QVBoxLayout())
+        self.grid = qtw.QGridLayout()
 
         delay_time = 3
 
-        # Create A Label
-        my_label = qtw.QLabel(f'Программа для автокопирования текста', self)
-        # Change the font size of label
-        my_label.setFont(qtg.QFont('Console', 16))
-        self.layout().addWidget(my_label)
+        self.my_label = qtw.QLabel(f'Программа для автокопирования текста', self)
+        self.my_label.setFont(qtg.QFont('Console', 16))
 
-        # Create an Text box
         self.my_text = qtw.QTextEdit(self,
                                      acceptRichText=False,
                                      lineWrapMode=qtw.QTextEdit.FixedColumnWidth,
@@ -29,59 +26,45 @@ class MainWindow(qtw.QWidget):
                                      placeholderText="Вставьте сюда текст...",
                                      )
 
-        # Change font size of spinbox
-        # my_spin.setFont(qtg.QFont('Helvetica', 18))
-
-        # Put combobox on the screen
-        self.layout().addWidget(self.my_text)
-
-        # Create a button
         self.pbutton = qtw.QPushButton("Начать вставку", self)
-        self.pbutton.clicked.connect(self.textpaste)
-        self.layout().addWidget(self.pbutton)
+        self.pbutton.clicked.connect(lambda: SimpleEvents.textpaste(self))
 
         self.sbutton = qtw.QPushButton("Приостановить", self)
-        self.sbutton.clicked.connect(self.stop)
+        self.sbutton.clicked.connect(lambda: SimpleEvents.stop(self))
 
-        self.layout().addWidget(self.sbutton)
+        self.bind_lbl = qtw.QLabel("Вставка по:", self)
 
-        # Show the app
+        self.bind_btn = qtw.QPushButton("Бинд", self)
+        self.bind_btn.clicked.connect(SimpleEvents.bind_keys)
+
+        self.exit_btn = qtw.QPushButton("Выход", self)
+        self.exit_btn.clicked.connect(lambda: SimpleEvents.exit())
+
+        self.setup_grid(grid=self.grid)
+
         self.show()
 
-    def textpaste(self):
-        # Step 2: Create a QThread object
-        self.thread = QThread()
-        # Step 3: Create a worker object
-        self.worker = Worker()
-        # Step 4: Move worker to the thread
-        self.worker.moveToThread(self.thread)
-        # Step 5: Connect signals and slots
-        self.thread.started.connect(self.worker.run)
-        self.worker.finished.connect(self.thread.quit)
-        self.worker.finished.connect(self.worker.deleteLater)
-        self.thread.finished.connect(self.thread.deleteLater)
-        # Step 6: Start the thread
-        self.thread.start()
-        self.pbutton.setEnabled(False)
-        self.thread.finished.connect(
-            lambda: self.pbutton.setEnabled(True)
-        )
+    def setup_grid(self, grid):
+        self.setLayout(self.grid)
+        self.layout().addWidget(self.my_label, 0, 0, 1, 3)
+        self.layout().addWidget(self.my_text, 1, 0, 1, 3)
+        self.layout().addWidget(self.pbutton, 2, 0, 1, 3)
+        self.layout().addWidget(self.sbutton, 3, 0, 1, 3)
+        self.layout().addWidget(self.bind_lbl, 4, 0)
+        self.bind_lbl.setStyleSheet("margin-left:auto;")
+        self.layout().addWidget(self.bind_btn, 4, 1)
+        self.bind_btn.setStyleSheet("")
+        self.layout().addWidget(self.exit_btn, 4, 2)
 
-        with open('file.txt', 'w', encoding='utf8') as f:
-            stri = self.my_text.toPlainText()
-            f.write(stri)
-        # Add name to label
 
-    def stop(self):
-        self.worker.paster.ongoing = not self.worker.paster.ongoing
-        if self.sbutton.text() == 'Приостановить':
-            self.sbutton.setText('Возобновить')
-        else:
-            self.sbutton.setText('Приостановить')
+
+
+
+
+
 
 
 
 app = qtw.QApplication([])
 mw = MainWindow()
 app.exec_()
-

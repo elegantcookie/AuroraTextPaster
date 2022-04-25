@@ -18,6 +18,7 @@ class Paster:
             self.contents[i] = self.contents[i].rstrip('\n')
 
     def start(self):
+
         for i in range(len(self.contents)):
             for j in range(len(self.contents[i])):
                 if self.ongoing:
@@ -29,7 +30,7 @@ class Paster:
                         self.keyboard.release(self.contents[i][j])
                         time.sleep(0.095)
                 else:
-                    time.sleep(3)
+                    time.sleep(5)
             self.keyboard.press(Key.enter)
             self.keyboard.release(Key.enter)
 
