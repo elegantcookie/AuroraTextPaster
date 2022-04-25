@@ -1,6 +1,3 @@
-build
-dist
 venv
 *.spec
-main1.py
-test.py
+*.txt
