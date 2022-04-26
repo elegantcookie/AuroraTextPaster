@@ -17,6 +17,8 @@ class Configurator:
         self.flags[key] = new_val
         self._refresh_flags()
 
+
+
     def _refresh_flags(self):
         """ Мне было лень что-то делать, поэтому функция просто перезаписывает весь конфиг """
         with open(self.config_name, 'w', encoding='utf8') as file:

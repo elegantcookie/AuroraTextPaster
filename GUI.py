@@ -1,12 +1,22 @@
 import PyQt5.QtWidgets as qtw
 import PyQt5.QtGui as qtg
+from PyQt5.QtCore import Qt as qt
+from PyQt5.QtGui import QKeyEvent
+import logging
 from events import SimpleEvents
+from confs import Configurator
+from pynput import keyboard
+
+import os
 
 
 class MainWindow(qtw.QWidget):
     def __init__(self):
         super().__init__()
+        self.configurator = Configurator()
         self.paste_connector = None
+        self.bind_connector = None
+        self.listener = None
         self.setup_ui()
 
     def setup_ui(self):
@@ -34,8 +44,12 @@ class MainWindow(qtw.QWidget):
 
         self.bind_lbl = qtw.QLabel("Вставка по:", self)
 
-        self.bind_btn = qtw.QPushButton("Бинд", self)
-        self.bind_btn.clicked.connect(SimpleEvents.bind_keys)
+        self.shortcut_keyseq = self.configurator.flags['bind_key']
+        self.shortcut = qtw.QShortcut(qtg.QKeySequence(self.shortcut_keyseq), self)
+        self.shortcut.activated.connect(lambda: SimpleEvents.exit())
+
+        self.bind_btn = qtw.QPushButton(self.shortcut_keyseq, self)
+        self.bind_btn.clicked.connect(lambda: SimpleEvents.bind_keys(self))
 
         self.exit_btn = qtw.QPushButton("Выход", self)
         self.exit_btn.clicked.connect(lambda: SimpleEvents.exit())
@@ -56,15 +70,26 @@ class MainWindow(qtw.QWidget):
         self.bind_btn.setStyleSheet("")
         self.layout().addWidget(self.exit_btn, 4, 2)
 
+    def hotkey(self):
+        def on_activate():
+            if self.paste_connector:
+                SimpleEvents.stop(self)
+            self.pbutton.click()
 
+        def for_canonical(f):
+            return lambda k: f(self.listener.canonical(k))
 
-
-
-
-
-
-
+        hotkey_val = keyboard.HotKey(
+            keyboard.HotKey.parse(self.configurator.flags['bind_key']),
+            on_activate)
+        self.listener = keyboard.Listener(
+            on_press=for_canonical(hotkey_val.press),
+            on_release=for_canonical(hotkey_val.release)
+        )
+        self.listener.start()
 
 app = qtw.QApplication([])
 mw = MainWindow()
+mw.hotkey()
 app.exec_()
+
