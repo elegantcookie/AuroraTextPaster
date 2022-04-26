@@ -1,7 +1,5 @@
 class _Connector:
-    """
-        Base class
-    """
+    """ Базовый класс """
 
     def __init__(self, *args):
         pass
@@ -11,11 +9,7 @@ class _Connector:
 
 
 class TToWConnector(_Connector):
-    """
-        Thread to Worker Connector
-
-        connects QThread to Worker for button events
-    """
+    """ Соединитель потока и воркера """
 
     def __init__(self, thread, worker):
         super(TToWConnector, self).__init__()
@@ -24,6 +18,7 @@ class TToWConnector(_Connector):
         self.connect()
 
     def connect(self):
+        """ Соединяет и запускает поток на воркере """
         self._worker.moveToThread(self._thread)
         self._thread.started.connect(self._worker.run)
         self._worker.finished.connect(self._thread.quit)
@@ -37,20 +32,3 @@ class TToWConnector(_Connector):
     def get_worker(self):
         return self._worker
 
-
-# class EToBConnector(_Connector):
-#     def __init__(self, event, button, func):
-#         super(EToBConnector, self).__init__()
-#         self._event = event
-#         self._button = button
-#         self._func = func
-#         self.connect()
-#
-#     def connect(self):
-#         self._button.finished.connect(self._func)
-#
-#     def get_event(self):
-#         return self._thread
-#
-#     def get_button(self):
-#         return self._worker

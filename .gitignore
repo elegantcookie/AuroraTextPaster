@@ -1,3 +1,8 @@
 venv
+build
+dist
 *.spec
 *.txt
+*.log
+custom_widgets.py
+test.py
