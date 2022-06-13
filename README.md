@@ -4,7 +4,7 @@
 
 **Интерфейс программы:**
 
-![image](https://user-images.githubusercontent.com/68335351/164990368-8277d206-edfe-47a8-8c8c-d59f1f0df8cc.png)
+![image](https://user-images.githubusercontent.com/68335351/173455447-513eb1d2-e2fd-4d2c-8e2b-5040364e2bcc.png)
 
 
 <h1>Описание работы</h1>
